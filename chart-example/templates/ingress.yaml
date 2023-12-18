@@ -1,0 +1,37 @@
+{{- $serviceName := .Values.OverrideName -}}
+{{- $namespace := .Values.OverrideNamespace -}}
+
+{{- with .Values.ingress }}
+{{- if .enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .name }}
+  namespace: {{ default $.Release.Namespace $namespace }}
+  annotations:
+  {{- range $key, $value := .annotations }}
+    {{ $key }}: '{{ $value }}'
+  {{- end }}
+spec:
+  ingressClassName: {{ .ingressClass }}
+  rules:
+  - host: {{ .host }}
+    http:
+      paths:
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
+        backend:
+          service:
+            name: {{ default $.Release.Name $serviceName }}
+            port:
+              number: {{ .port }}
+  {{- with .tls }}
+  {{- if .enabled }}
+  tls:
+  - hosts:
+      - {{ .host }}
+    secretName: {{ .secretName }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

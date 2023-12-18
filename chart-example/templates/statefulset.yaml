@@ -1,0 +1,83 @@
+{{- if .Values.useStatefulSet }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ default .Release.Name .Values.OverrideName }}
+  namespace: {{ default $.Release.Namespace .Values.OverrideNamespace }}
+spec:
+  {{- if .Values.replicas }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  selector:
+      matchLabels:
+          name: {{ default .Release.Name .Values.OverrideName }}
+  template:
+    metadata:
+      labels:
+        name: {{ default .Release.Name .Values.OverrideName }}
+    spec:
+      {{- with .Values.serviceAccount }}
+      {{- if .enabled }}
+      serviceAccountName: {{ .name }}
+      {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ default .Release.Name .Values.OverrideName }}
+          image: '{{ .Values.image }}:{{ .Values.tag }}'
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          {{- if .Values.ports }}
+          ports:
+          {{- range .Values.ports }}
+            - containerPort: {{ .port }}
+              name: {{ .name }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            requests:
+              cpu: {{ .request_cpu }}
+              memory: {{ .request_memory }}
+            limits:
+              cpu: {{ .limit_cpu }}
+              memory: {{ .limit_memory }}
+          {{- end }}
+          env:
+          {{- if .Values.env }}
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          envFrom:
+          {{- if or .Values.configMap .Values.secret }}
+          {{- with .Values.configMap }}
+          {{- if .enabled }}
+          - configMapRef:
+              name: {{ .name }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.secret }}
+          {{- if .enabled }}
+          - secretRef:
+              name: {{ .name }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.configMapName }}
+          - configMapRef:
+              name: {{ .Values.configMapName }}
+          {{- end }}
+          {{- if .Values.secretName }}
+          - secretRef:
+              name: {{ .Values.secretName }}
+          {{- end }}
+      {{- if .Values.pvc.enabled }}    
+          volumeMounts:
+          - mountPath: {{ .Values.mountPath }}
+            name: {{ .Values.volumeName }}
+      volumes:
+        - name: {{ .Values.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.name }}
+      {{- end }}
+{{- end }}

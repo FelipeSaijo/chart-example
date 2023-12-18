@@ -1,0 +1,95 @@
+OverrideName: ""
+OverrideNamespace: ""
+
+## Deployment/Statefulset config
+useStatefulSet: true
+
+replicas: ''
+
+image: ""
+tag: ""
+imagePullPolicy: IfNotPresent
+
+ports:
+  - port: 80
+    name: "http"
+      
+resources: {}
+  # request_cpu: "20m"
+  # request_memory: "50Mi"
+  # limit_cpu: "50m"
+  # limit_memory: "100Mi"
+
+env: {}
+  # ENV: 'dev'
+
+mountPath: ""
+volumeName: ""
+  
+# Secret e ConfigMap ja existente
+secretName: ''
+configMapName: ''
+
+## Service config
+service:
+  type: "NodePort"
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 80
+      name: "http"
+
+## ConfigMap config
+configMap:
+  enabled: false
+  name: ""
+  data: {}
+    # SECRET: teste
+
+## Secret config
+secret:
+  enabled: false
+  name: ""
+  type: "opaque"
+  data: {}
+    # SECRET: dGVzdGUK
+
+## HorizontalPodAutoscaling config
+hpa:
+  enabled: false
+  minReplicas: 4
+  maxReplicas: 6
+  cpuAVGUtilization: 70
+  memoryAVGUtilization: 70
+
+## Ingress config
+ingress:
+  enabled: false
+  host: ""
+  name: ""
+  ingressClass: "nginx"
+  path: "/"
+  pathType: ImplementationSpecific
+  port: 80
+
+  tls:
+    enabled: false
+    host: ""
+    secretName: ""
+
+  annotations: {}
+
+## ServiceAccount config
+serviceAccount:
+  enabled: false
+  name: ""
+  annotations: {}
+
+pvc:
+  enabled: false
+  name: ""
+  size: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""

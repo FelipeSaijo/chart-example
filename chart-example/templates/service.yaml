@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ default .Release.Name .Values.OverrideName }}
+    namespace: {{ default $.Release.Namespace .Values.OverrideNamespace }}
+spec:
+  selector:
+    name: {{ default .Release.Name .Values.OverrideName }}
+  type: {{ .Values.service.type }}
+  {{- range .Values.service.ports }}
+  ports:
+    - protocol: {{ .protocol }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      name: {{ .name }}
+  {{- end }}

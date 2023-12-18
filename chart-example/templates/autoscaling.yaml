@@ -1,0 +1,40 @@
+{{- $namespace := .Values.OverrideNamespace -}}
+{{- $deployName := .Values.OverrideName -}}
+{{- $useStatefulSet := .Values.useStatefulSet -}}
+
+{{- with .Values.hpa }}
+{{- if .enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ default $.Release.Name $deployName }}
+  namespace: {{ default $.Release.Namespace $namespace }}
+spec:
+  scaleTargetRef:
+    {{- if $useStatefulSet }}
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: {{ default $.Release.Name $deployName }}
+    {{- end }}
+    {{- if eq $useStatefulSet false }}
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ default $.Release.Name $deployName }}
+    {{- end }}
+  minReplicas: {{ .minReplicas }}
+  maxReplicas: {{ .maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .cpuAVGUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .memoryAVGUtilization }}
+{{- end }}
+{{- end }}
