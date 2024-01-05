@@ -263,7 +263,7 @@ sha256sum my-chart-1.0.0.tgz
 
 - Use o seguinte comando para gerar um timestamp para ser usado a seguir.
 ``` bash
-echo "$(TZ=America/Sao_Paulo date +"%Y-%m-%dT%H:%M:%S.%N%:z").$(TZ=America/Sao_Paulo date -u +"%N" | cut -c1-9)$(TZ=America/Sao_Paulo date -u +"%:z")"
+echo "$(TZ=America/Sao_Paulo date +"%Y-%m-%dT%H:%M:%S.%N%:z" | sed 's/\(...\)$/:00/')"
 ```
 
 - Crie um arquivo 'index.yml' na raiz do projeto junto com o helm chart e o package. Ele é responsavel por determinar as versões do chart possiveis de ser usado.
