@@ -4,7 +4,7 @@ entries:
     ## Version 1
   - apiVersion: v2
     appVersion: "1.0" # Versão definida dentro do arquivo Chart.yaml
-    created: "2023-12-18T18:38:43.909980418-03:00.914174918+00:00"
+    created: "2023-12-18T18:38:43.909980418-03:00"
     description: Helm chart to deployment applications on Kubernetes
     digest: 07c1aaf8b01e9563416e309828c1dec4027033ed9dfdfed060ab175631b1de94 # Digest coletado com o comando anterior
     home: https://github.com/FelipeSaijo/chart-example # url do repositorio
